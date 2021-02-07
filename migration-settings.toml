@@ -1,0 +1,92 @@
+[gogs]
+    # SQL login to the Gogs database
+    host = "localhost"
+    database = "gogs"
+    username = "root"
+    no_password = false
+
+    # Name or ID of the GOGS repository to migrate
+    repository = "octocat"
+
+
+[github]
+    username = "octocat"
+    repository = "testing-api"
+    app_id = 999
+    key_file = "github-app-2000-01-01.private-key.pem"
+
+
+[migration]
+
+    # With dry-run enabled, the tool will not made any changes to the Github repository, and only perform read operations.
+    # This will generate the logs, and allows verifying all mappings occur as expected
+    dryrun = true
+
+    # Wait one second after each PUT, POST, or PATCH request to the Github API, in the hope of avoiding reaching the
+    # abuse limit (nothing is guaranteed here)
+    # See https://docs.github.com/en/rest/guides/best-practices-for-integrators#dealing-with-abuse-rate-limits
+    slow = false
+
+    # Do you want to migrate labels?
+    labels = true
+
+    # Do you want to translate @mentions if the Github account can be found for the mentioned user in comments.
+    # If set to false, the mention will be replaced by the markdown code [@octocat](https://github.com/octocat) to
+    # supress e-mail notifications about @mentions.
+    # @mentions for which no corresponding Github account can be found will be put in this format to avoid tagging
+    # random Github users, except when the @mention does not reference a person in the Gogs database.
+    mentions = true
+
+    # Gogs guesses the language for codeblocks which are created with leading indentation, while Github does not.
+    # By setting this key to a valid markdown code language, such codeblocks will be converted to explicit language
+    # codeblocks with the given key, so Github will apply syntax highlighting
+    default_code_language = "python"
+
+
+    [migration.pull_requests]
+        # If both the head branch and the base branch are present, pull requests can be migrated
+
+        # Do you want to migrate pull requests?
+        # Choices: ['open', 'closed']
+        migrate = ['open', 'closed']
+
+        # If a pull request was assigned to a Gogs user, and the user's Github account can be found, do you want to
+        # reassign the pull request to that user?
+        # WARNING: Sends an e-mail to the assigned user for every pull request
+        # Choices: ['open', 'closed']
+        assignees = ['open']
+
+        # Do you want pull requests associated with the milestones they were on in Gogs
+        milestones = ['open', 'closed']
+
+
+        [migration.pull_requests.as_issue]
+
+            # In case the head and/or base branche is missing, do you instead want to migrate the pull request as an
+            # issue?
+            # Choices: ['open', 'closed']
+            migrate = ['open', 'closed']
+
+            # In case the pull request was migrated as an issue, do you want to assign the Github user if found?
+            # WARNING: Sends an e-mail to the assigned user for every pull request
+            # Choices: ['open', 'closed']
+            assignees = ['open']
+
+            # Do you want pull requests that were migrated as issues associated with the milestones they were on in Gogs
+            milestones = []
+
+
+    [migration.issues]
+
+        # Do you wnat to migrate issues?
+        # Choices: ['open', 'closed']
+        migrate = ['open', 'closed']
+
+        # If a issue was assigned to a Gogs user, and the user's Github account can be found, do you want to
+        # reassign the isue to that user?
+        # WARNING: Sends e-mail notifications to assigned user for every issue
+        # Choices: ['open', 'closed']
+        assignees = ['open']
+
+        # Do you want issues associated with the milestones they were on in Gogs?
+        milestones = ['open', 'closed']
